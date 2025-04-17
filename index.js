@@ -37,3 +37,38 @@ db.connect((err)=>{
 });
 
 // Fetch Data from MySQL (GET API)
+
+app.get('/people',(req,res)=>{
+    db.query('SELECT * FROM people',(err,results)=>{
+        if (err) {
+            res.status(500).send('Database query error');   // send error response
+          }
+        else{
+            res.json(results);
+        }
+
+    });
+
+});
+
+
+// POST /people – Add a New Person
+
+app.post('/people',(req,res)=>{
+
+    const { name } = req.body;
+    if (!name) {
+        return res.status(400).json({ error: 'Name is required' });
+      }
+      const sql = 'INSERT INTO people (name) VALUES (?)';
+    
+      db.query(sql,[name],(err,result)=>{
+        if (err) {
+            return res.status(500).json({ error: 'Database insert error' });
+          }
+          else{
+            res.status(201).json({ message: 'Person added!', id: result.insertId });
+          }
+      });
+
+});
